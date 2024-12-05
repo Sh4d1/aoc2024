@@ -1,22 +1,21 @@
+use std::collections::HashSet;
+
 use itertools::Itertools;
 
 #[derive(Debug, Clone)]
 pub struct Input {
-    rules: Vec<(usize, usize)>,
+    rules: HashSet<(usize, usize)>,
     updates: Vec<Vec<usize>>,
 }
 
 impl Input {
     pub fn sort_fn(&self) -> impl FnMut(&&usize, &&usize) -> std::cmp::Ordering {
         move |&a, &b| {
-            for r in &self.rules {
-                if *a == r.0 && *b == r.1 {
-                    return std::cmp::Ordering::Less;
-                } else if *a == r.1 && *b == r.0 {
-                    return std::cmp::Ordering::Greater;
-                }
+            if self.rules.contains(&(*a, *b)) {
+                std::cmp::Ordering::Less
+            } else {
+                std::cmp::Ordering::Greater
             }
-            unreachable!()
         }
     }
 }
@@ -43,14 +42,9 @@ pub fn part1(input: &Input) -> usize {
         .updates
         .iter()
         .filter(|u| {
-            u.iter().tuple_windows().all(|(&a, &b)| {
-                for r in &input.rules {
-                    if a == r.0 && b == r.1 {
-                        return true;
-                    }
-                }
-                false
-            })
+            u.iter()
+                .tuple_windows()
+                .all(|(&a, &b)| input.rules.contains(&(a, b)))
         })
         .fold(0, |acc, u| acc + *u.get(u.len() / 2).unwrap())
 }
@@ -61,14 +55,9 @@ pub fn part2(input: &Input) -> usize {
         .updates
         .iter()
         .filter(|u| {
-            !u.iter().tuple_windows().all(|(&a, &b)| {
-                for r in &input.rules {
-                    if a == r.0 && b == r.1 {
-                        return true;
-                    }
-                }
-                false
-            })
+            !u.iter()
+                .tuple_windows()
+                .all(|(&a, &b)| input.rules.contains(&(a, b)))
         })
         .fold(0, |acc, u| {
             acc + u

@@ -6,6 +6,21 @@ pub struct Input {
     updates: Vec<Vec<usize>>,
 }
 
+impl Input {
+    pub fn sort_fn(&self) -> impl FnMut(&&usize, &&usize) -> std::cmp::Ordering {
+        move |&a, &b| {
+            for r in &self.rules {
+                if *a == r.0 && *b == r.1 {
+                    return std::cmp::Ordering::Less;
+                } else if *a == r.1 && *b == r.0 {
+                    return std::cmp::Ordering::Greater;
+                }
+            }
+            unreachable!()
+        }
+    }
+}
+
 #[aoc_generator(day5)]
 pub fn parse(input: &str) -> Input {
     let (one, two) = input.split_once("\n\n").unwrap();
@@ -58,16 +73,7 @@ pub fn part2(input: &Input) -> usize {
         .fold(0, |acc, u| {
             acc + u
                 .iter()
-                .sorted_by(|&a, &b| {
-                    for r in &input.rules {
-                        if *a == r.0 && *b == r.1 {
-                            return std::cmp::Ordering::Less;
-                        } else if *a == r.1 && *b == r.0 {
-                            return std::cmp::Ordering::Greater;
-                        }
-                    }
-                    unreachable!()
-                })
+                .sorted_by(input.sort_fn())
                 .nth(u.len() / 2)
                 .unwrap()
         })

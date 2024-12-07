@@ -1,4 +1,5 @@
 #![feature(extend_one)]
+#![feature(pattern)]
 #![warn(clippy::all)]
 #[macro_use]
 extern crate aoc_runner_derive;

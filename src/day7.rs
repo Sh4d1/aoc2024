@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, str::pattern::Pattern};
 
 #[derive(Debug)]
 pub struct Equation {
@@ -29,57 +29,75 @@ pub fn parse(input: &str) -> Input {
             .collect(),
     }
 }
+
 #[aoc(day7, part1)]
 pub fn part1(input: &Input) -> usize {
     input.equations.iter().fold(0, |acc, e| {
         let mut hs = HashSet::new();
-        e.equation.iter().for_each(|&n| {
-            if hs.len() == 0 {
-                hs.insert(n);
-                return;
-            }
-
-            let add = hs.iter().map(|d| d + n).collect::<HashSet<_>>();
-            let mul = hs.iter().map(|d| d * n).collect::<HashSet<_>>();
+        hs.insert(e.test);
+        e.equation.iter().rev().for_each(|&n| {
+            let add = hs
+                .iter()
+                .filter_map(|d| if n <= *d { Some(d - n) } else { None })
+                .collect::<HashSet<_>>();
+            let mul = hs
+                .iter()
+                .filter_map(|d| {
+                    if d.rem_euclid(n) == 0 {
+                        Some(d / n)
+                    } else {
+                        None
+                    }
+                })
+                .collect::<HashSet<_>>();
 
             hs = add.union(&mul).copied().collect();
         });
-        if hs.contains(&e.test) {
-            acc + e.test
-        } else {
-            acc
-        }
+        acc + hs.contains(&0).then(|| e.test).unwrap_or(0)
     })
 }
+
 #[aoc(day7, part2)]
 pub fn part2(input: &Input) -> usize {
     input.equations.iter().fold(0, |acc, e| {
         let mut hs = HashSet::new();
-        e.equation.iter().for_each(|&n| {
-            if hs.len() == 0 {
-                hs.insert(n);
-                return;
-            }
-
-            let add = hs.iter().map(|d| d + n).collect::<HashSet<_>>();
-            let mul = hs.iter().map(|d| d * n).collect::<HashSet<_>>();
+        hs.insert(e.test);
+        e.equation.iter().rev().for_each(|&n| {
+            let add = hs
+                .iter()
+                .filter_map(|d| if n <= *d { Some(d - n) } else { None })
+                .collect::<HashSet<_>>();
+            let mul = hs
+                .iter()
+                .filter_map(|d| {
+                    if d.rem_euclid(n) == 0 {
+                        Some(d / n)
+                    } else {
+                        None
+                    }
+                })
+                .collect::<HashSet<_>>();
             let concat = hs
                 .iter()
                 .filter_map(|d| {
-                    let n_digit = n.checked_ilog10().unwrap_or(0) + 1;
-                    let next = d * 10usize.pow(n_digit) + n;
-                    if next > e.test { None } else { Some(next) }
+                    if n.to_string().is_suffix_of(d.to_string().as_str()) {
+                        Some(
+                            d.to_string()
+                                .strip_suffix(n.to_string().as_str())
+                                .unwrap()
+                                .parse()
+                                .unwrap_or(0),
+                        )
+                    } else {
+                        None
+                    }
                 })
                 .collect::<HashSet<_>>();
 
             hs = add.union(&mul).copied().collect();
             hs = hs.union(&concat).copied().collect();
         });
-        if hs.contains(&e.test) {
-            acc + e.test
-        } else {
-            acc
-        }
+        acc + hs.contains(&0).then(|| e.test).unwrap_or(0)
     })
 }
 #[cfg(test)]

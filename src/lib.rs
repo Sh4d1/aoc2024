@@ -1,4 +1,5 @@
 #![feature(extend_one)]
+#![feature(mixed_integer_ops_unsigned_sub)]
 #![feature(pattern)]
 #![warn(clippy::all)]
 #[macro_use]
@@ -11,4 +12,5 @@ pub mod day4;
 pub mod day5;
 pub mod day6;
 pub mod day7;
+pub mod day8;
 aoc_lib! { year = 2024 }

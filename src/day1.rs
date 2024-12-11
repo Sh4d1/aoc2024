@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use itertools::Itertools;
+use rustc_hash::FxHashMap as HashMap;
 
 #[aoc_generator(day1)]
 pub fn parse(input: &str) -> (Vec<usize>, Vec<usize>) {
@@ -22,7 +21,7 @@ pub fn part1(input: &(Vec<usize>, Vec<usize>)) -> usize {
 
 #[aoc(day1, part2)]
 pub fn part2(input: &(Vec<usize>, Vec<usize>)) -> usize {
-    let hm = input.1.iter().fold(HashMap::new(), |mut acc, l| {
+    let hm = input.1.iter().fold(HashMap::default(), |mut acc, l| {
         acc.insert(l, 1 + acc.get(&l).unwrap_or(&0));
         acc
     });

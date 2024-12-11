@@ -1,5 +1,5 @@
-use std::{collections::HashSet, str::pattern::Pattern};
-
+use rustc_hash::FxHashSet as HashSet;
+use std::str::pattern::Pattern;
 #[derive(Debug)]
 pub struct Equation {
     test: usize,
@@ -33,7 +33,7 @@ pub fn parse(input: &str) -> Input {
 #[aoc(day7, part1)]
 pub fn part1(input: &Input) -> usize {
     input.equations.iter().fold(0, |acc, e| {
-        let mut hs = HashSet::new();
+        let mut hs = HashSet::default();
         hs.insert(e.test);
         e.equation.iter().rev().for_each(|&n| {
             let add = hs
@@ -60,7 +60,7 @@ pub fn part1(input: &Input) -> usize {
 #[aoc(day7, part2)]
 pub fn part2(input: &Input) -> usize {
     input.equations.iter().fold(0, |acc, e| {
-        let mut hs = HashSet::new();
+        let mut hs = HashSet::default();
         hs.insert(e.test);
         e.equation.iter().rev().for_each(|&n| {
             let add = hs

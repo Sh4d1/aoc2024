@@ -1,4 +1,5 @@
-use std::collections::{BinaryHeap, HashSet};
+use rustc_hash::FxHashSet as HashSet;
+use std::collections::BinaryHeap;
 
 pub struct Input {
     grid: Vec<Vec<usize>>,
@@ -39,7 +40,7 @@ const DIRS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
 pub fn part1(input: &Input) -> usize {
     input.heads.iter().fold(0, |mut acc, (hi, hj)| {
         let mut heap = BinaryHeap::new();
-        let mut visited = HashSet::new();
+        let mut visited = HashSet::default();
         heap.push((*hi, *hj));
         loop {
             if let Some((pi, pj)) = heap.pop() {

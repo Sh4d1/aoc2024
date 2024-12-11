@@ -1,4 +1,5 @@
-use std::collections::{BinaryHeap, HashMap};
+use rustc_hash::FxHashMap as HashMap;
+use std::collections::BinaryHeap;
 
 pub struct Input {
     numbers: Vec<usize>,
@@ -12,7 +13,7 @@ enum Blink {
 
 #[aoc_generator(day11)]
 pub fn parse(input: &str) -> Input {
-    let mut cache = HashMap::new();
+    let mut cache = HashMap::default();
     let numbers: Vec<usize> = input
         .split_whitespace()
         .map(|l| l.parse::<usize>().unwrap())
@@ -49,7 +50,7 @@ fn solve(input: &Input, n: usize) -> usize {
         .fold(
             input.numbers.iter().map(|n| (n, 1)).collect(),
             |acc: HashMap<&usize, usize>, _| {
-                acc.iter().fold(HashMap::new(), |mut acc, (n, c)| {
+                acc.iter().fold(HashMap::default(), |mut acc, (n, c)| {
                     match input.cache.get(&n).unwrap() {
                         Blink::Change(d) => *acc.entry(d).or_insert(0) += c,
                         Blink::Split(l, r) => {

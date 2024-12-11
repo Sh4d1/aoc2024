@@ -1,6 +1,5 @@
-use std::collections::HashSet;
-
 use bitflags::bitflags;
+use rustc_hash::FxHashSet as HashSet;
 
 bitflags! {
    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -141,7 +140,7 @@ pub fn part2(input: &Input) -> usize {
 
     let mut guard = input.guard_start;
     visited[guard.0][guard.1] = guard.2.into();
-    let mut res = HashSet::new();
+    let mut res = HashSet::default();
 
     loop {
         let next_pos = (

@@ -1,6 +1,5 @@
-use std::collections::HashSet;
-
 use itertools::Itertools;
+use rustc_hash::FxHashSet as HashSet;
 
 #[derive(Debug, Clone)]
 pub struct Input {

@@ -1,6 +1,5 @@
-use std::collections::{HashMap, HashSet};
-
 use itertools::Itertools;
+use rustc_hash::{FxHashMap as HashMap, FxHashSet as HashSet};
 
 #[derive(Default, Debug, Clone)]
 pub struct Input {
@@ -11,7 +10,7 @@ pub struct Input {
 
 #[aoc_generator(day8)]
 pub fn parse(input: &str) -> Input {
-    let mut frequencies: HashMap<char, HashSet<(usize, usize)>> = HashMap::new();
+    let mut frequencies: HashMap<char, HashSet<(usize, usize)>> = HashMap::default();
     let grid: Vec<Vec<char>> = input
         .lines()
         .enumerate()
@@ -39,22 +38,21 @@ pub fn part1(input: &Input) -> usize {
     input
         .frequencies
         .iter()
-        .fold(HashSet::new(), |mut acc, fr| {
-            acc.extend(
-                fr.1.iter()
-                    .tuple_combinations()
-                    .fold(HashSet::new(), |mut acc, (a, b)| {
-                        let new_a = ((2 * b.0).wrapping_sub(a.0), (2 * b.1).wrapping_sub(a.1));
-                        let new_b = ((2 * a.0).wrapping_sub(b.0), (2 * a.1).wrapping_sub(b.1));
-                        if new_a.0 < input.h && new_a.1 < input.w {
-                            acc.insert(new_a);
-                        }
-                        if new_b.0 < input.h && new_b.1 < input.w {
-                            acc.insert(new_b);
-                        }
-                        acc
-                    }),
-            );
+        .fold(HashSet::default(), |mut acc, fr| {
+            acc.extend(fr.1.iter().tuple_combinations().fold(
+                HashSet::default(),
+                |mut acc, (a, b)| {
+                    let new_a = ((2 * b.0).wrapping_sub(a.0), (2 * b.1).wrapping_sub(a.1));
+                    let new_b = ((2 * a.0).wrapping_sub(b.0), (2 * a.1).wrapping_sub(b.1));
+                    if new_a.0 < input.h && new_a.1 < input.w {
+                        acc.insert(new_a);
+                    }
+                    if new_b.0 < input.h && new_b.1 < input.w {
+                        acc.insert(new_b);
+                    }
+                    acc
+                },
+            ));
             acc
         })
         .len()
@@ -64,40 +62,39 @@ pub fn part2(input: &Input) -> usize {
     input
         .frequencies
         .iter()
-        .fold(HashSet::new(), |mut acc, fr| {
-            acc.extend(
-                fr.1.iter()
-                    .tuple_combinations()
-                    .fold(HashSet::new(), |mut acc, (a, b)| {
-                        let d1 = (a.0 as isize - b.0 as isize, a.1 as isize - b.1 as isize);
-                        let d2 = (b.0 as isize - a.0 as isize, b.1 as isize - a.1 as isize);
+        .fold(HashSet::default(), |mut acc, fr| {
+            acc.extend(fr.1.iter().tuple_combinations().fold(
+                HashSet::default(),
+                |mut acc, (a, b)| {
+                    let d1 = (a.0 as isize - b.0 as isize, a.1 as isize - b.1 as isize);
+                    let d2 = (b.0 as isize - a.0 as isize, b.1 as isize - a.1 as isize);
 
-                        let mut next_a = *b;
-                        let mut next_b = *a;
-                        loop {
-                            if next_a.0 >= input.h || next_a.1 >= input.w {
-                                break;
-                            }
-                            acc.insert(next_a);
-                            next_a = (
-                                next_a.0.wrapping_sub_signed(d1.0),
-                                next_a.1.wrapping_sub_signed(d1.1),
-                            );
+                    let mut next_a = *b;
+                    let mut next_b = *a;
+                    loop {
+                        if next_a.0 >= input.h || next_a.1 >= input.w {
+                            break;
                         }
+                        acc.insert(next_a);
+                        next_a = (
+                            next_a.0.wrapping_sub_signed(d1.0),
+                            next_a.1.wrapping_sub_signed(d1.1),
+                        );
+                    }
 
-                        loop {
-                            if next_b.0 >= input.h || next_b.1 >= input.w {
-                                break;
-                            }
-                            acc.insert(next_b);
-                            next_b = (
-                                next_b.0.wrapping_sub_signed(d2.0),
-                                next_b.1.wrapping_sub_signed(d2.1),
-                            );
+                    loop {
+                        if next_b.0 >= input.h || next_b.1 >= input.w {
+                            break;
                         }
-                        acc
-                    }),
-            );
+                        acc.insert(next_b);
+                        next_b = (
+                            next_b.0.wrapping_sub_signed(d2.0),
+                            next_b.1.wrapping_sub_signed(d2.1),
+                        );
+                    }
+                    acc
+                },
+            ));
             acc
         })
         .len()

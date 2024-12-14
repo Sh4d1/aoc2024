@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use rustc_hash::FxHashMap as HashMap;
 use std::cmp::max;
 
 #[derive(Debug, Clone)]
@@ -41,39 +40,31 @@ pub fn parse(input: &str) -> Input {
 
 #[aoc(day14, part1)]
 pub fn part1(input: &Input) -> usize {
-    let mut robots = input.robots.clone();
-    for _ in 0..100 {
-        robots.iter_mut().for_each(|r| {
-            r.p.0 += r.v.0;
-            r.p.1 += r.v.1;
-            if r.p.0 >= input.w as isize || r.p.0 < 0 {
-                r.p.0 = r.p.0.rem_euclid(input.w as isize);
+    let (a, b, c, d) = input.robots.iter().fold((0, 0, 0, 0), |mut acc, r| {
+        let mut x = r.p.0 + r.v.0 * 100;
+        let mut y = r.p.1 + r.v.1 * 100;
+        if x >= input.w as isize || x < 0 {
+            x = x.rem_euclid(input.w as isize);
+        }
+        if y >= input.h as isize || y < 0 {
+            y = y.rem_euclid(input.h as isize);
+        }
+        if x > input.w as isize / 2 {
+            if y > input.h as isize / 2 {
+                acc.0 += 1;
+            } else if y < input.h as isize / 2 {
+                acc.1 += 1;
             }
-            if r.p.1 >= input.h as isize || r.p.1 < 0 {
-                r.p.1 = r.p.1.rem_euclid(input.h as isize);
+        } else if x < input.w as isize / 2 {
+            if y > input.h as isize / 2 {
+                acc.2 += 1;
+            } else if y < input.h as isize / 2 {
+                acc.3 += 1;
             }
-        });
-    }
-    robots
-        .iter()
-        .fold(HashMap::default(), |mut acc, r| {
-            if r.p.0 > input.w as isize / 2 {
-                if r.p.1 > input.h as isize / 2 {
-                    *acc.entry(0).or_insert(0) += 1;
-                } else if r.p.1 < input.h as isize / 2 {
-                    *acc.entry(1).or_insert(0) += 1;
-                }
-            } else if r.p.0 < input.w as isize / 2 {
-                if r.p.1 > input.h as isize / 2 {
-                    *acc.entry(2).or_insert(0) += 1;
-                } else if r.p.1 < input.h as isize / 2 {
-                    *acc.entry(3).or_insert(0) += 1;
-                }
-            };
-            acc
-        })
-        .values()
-        .fold(1, |acc, v| acc * v)
+        };
+        acc
+    });
+    a * b * c * d
 }
 
 #[aoc(day14, part2)]

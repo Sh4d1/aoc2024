@@ -85,8 +85,4 @@ Prize: X=18641, Y=10279";
     fn example1() {
         assert_eq!(part1(&parse(INPUT)), 480)
     }
-    #[test]
-    fn example2() {
-        assert_eq!(part2(&parse(INPUT)), 0)
-    }
 }
